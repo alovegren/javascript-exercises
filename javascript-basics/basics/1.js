@@ -1,0 +1,1 @@
+// A `SyntaxError` is raised because there is a whitespace character after `\`.

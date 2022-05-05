@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+  <head></head>
+  <body>
+    <h1>Cancel a Booking</h1>
+    <p>
+      <form id="cancel_booking">
+        <label for="booking_id" name="booking_id">Booking ID: </label>
+        <input type="text" name="booking_id">
+        <input type='submit'>
+      </form>
+    </p>
+    <script>
+      function enableBookingCancellation() {
+        let cancellationForm = document.getElementById('cancel_booking');
+        cancellationForm.onsubmit = event => {
+          event.preventDefault();
+          let cancelData = new FormData(cancellationForm);
+          let bookingId = cancelData.get("booking_id");
+          cancelBooking(bookingId);
+        }
+      }
+
+      function createBookingCancellationRequest(bookingId) {
+        return new Promise((resolve, reject) => {
+          let request = new XMLHttpRequest();
+          request.open('PUT', `http://localhost:3000/api/bookings/${bookingId}`);
+
+          request.onload = () => {
+            if (request.status === 204) {
+              resolve();
+            } else {
+              reject(request.response);
+            }
+          }
+
+          request.send();
+        }); 
+      }
+
+      async function cancelBooking(bookingId) {
+        try {
+          await createBookingCancellationRequest(bookingId);
+          alert('The booking was cancelled');
+        } catch(error) {
+          alert(error);
+        }
+      }
+
+      enableBookingCancellation();
+    </script>
+    <h1>Cancel a Schedule</h1>
+    <p>
+      <form id="cancel_schedule">
+        <label for="schedule_id">Schedule ID: </label>
+        <input type="text" name="schedule_id">
+        <input type='submit'>
+      </form>
+    </p>
+    <script> 
+      function enableScheduleCancellation() {
+        let cancellationForm = document.getElementById('cancel_schedule');
+        cancellationForm.onsubmit = event => {
+          event.preventDefault();
+          let cancelData = new FormData(cancellationForm);
+          let scheduleId = cancelData.get("schedule_id");
+          cancelSchedule(scheduleId);
+        }
+      }
+
+      function createScheduleCancellationRequest(scheduleId) {
+        return new Promise((resolve, reject) => {
+          let request = new XMLHttpRequest();
+          request.open('DELETE', 
+          `http://localhost:3000/api/schedules/${scheduleId}`);
+
+          request.onload = () => {
+            if (request.status === 204) {
+              resolve();
+            } else {
+              reject(request.response);
+            }
+          }
+
+          request.send();
+        });
+      }
+
+      async function cancelSchedule(scheduleId) {
+        try {
+          await createScheduleCancellationRequest(scheduleId);
+          alert('The schedule was deleted');
+        } catch(error) {
+          alert(error);
+        }
+      }
+
+      enableScheduleCancellation();
+    </script>
+  </body>
+</html>

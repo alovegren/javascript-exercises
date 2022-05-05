@@ -1,0 +1,202 @@
+<!doctype html>
+<html>
+  <head><h1>Schedules</h1></head>
+  <body>
+    <form>
+      <p>
+        <label for="schedule">Please select one schedule </label><select id="schedule_selector" name="id">
+
+        </select>
+    <script>
+      function display(items) {
+        items.map(item => item.toString());
+        return items.join(' | ');
+      }
+
+      function createOption(jsonEntry, identifier, displayItems) {
+        const option = document.createElement('option');
+        option.setAttribute('id', jsonEntry[identifier]);
+        option.setAttribute('value', jsonEntry[identifier]);
+        const displayText = document.createTextNode(display(displayItems));
+        option.appendChild(displayText);
+
+        return option;
+      }
+      
+      const staffRequest = new XMLHttpRequest();
+      staffRequest.open('GET', 'http://localhost:3000/api/staff_members');
+      const ID_TO_STAFF_NAME = {};
+
+      staffRequest.addEventListener('load', () => {
+        const staffs = JSON.parse(staffRequest.response);
+
+        for (let id = 1; id <= staffs.length; id += 1) {
+          ID_TO_STAFF_NAME[id] = staffs[id - 1].name;
+        }
+
+        const scheduleSelect = document.getElementById('schedule_selector');
+        
+        const scheduleRequest = new XMLHttpRequest();
+        scheduleRequest.open('GET', 'http://localhost:3000/api/schedules');
+        
+        scheduleRequest.addEventListener('load', () => {
+          const schedules = JSON.parse(scheduleRequest.response);
+          console.log(schedules);
+
+          for (let idx = 0; idx < schedules.length; idx += 1) {
+            let schedule = schedules[idx];
+
+            if (!schedule.student_email) {
+              let staffName = ID_TO_STAFF_NAME[schedule.staff_id];
+              let toDisplay = [staffName, schedule.date, schedule.time];
+              let option = createOption(schedule, 'id', toDisplay);
+          
+              scheduleSelect.appendChild(option);
+            }
+          }
+        });
+        scheduleRequest.send();
+      }); 
+
+      staffRequest.send();
+    </script>
+    </p>
+    <p>
+      <label for="email">Email: </label><input type="text" name="student_email">
+      <input type="submit">
+    </p>
+  </form>
+  <script>
+    function multiPartToJSON(formData) {
+      let json = {};
+
+      for (let entry of formData.entries()) {
+        json[entry[0]] = entry[1]
+      }
+      return json;
+    }
+
+    function drawNewStudentForm(bookingSeq, email) {
+      let newStudentSection = document.createElement('section');
+      let header = document.createElement('h1');
+      header.textContent = 'Please provide new student details';
+      newStudentSection.appendChild(header);
+
+      let bookingForm = document.createElement('form');
+      bookingForm.id = 'new_student_form';
+
+      let emailParagraph = document.createElement('p');
+      let emailLabel = document.createElement('label');
+      let emailInput = document.createElement('input');
+      emailLabel.for = 'email';
+      emailLabel.innerText = 'Email: '
+      emailInput.type = 'text';
+      emailInput.name = 'email';
+      emailInput.value = email
+      emailParagraph.appendChild(emailLabel);
+      emailParagraph.appendChild(emailInput);
+      bookingForm.appendChild(emailParagraph);
+
+      let nameParagraph = document.createElement('p');
+      let nameLabel = document.createElement('label');
+      let nameInput = document.createElement('input');
+      nameLabel.for = 'name';
+      nameLabel.innerText = 'Name: '
+      nameInput.type = 'text';
+      nameInput.name = 'name';
+      nameParagraph.appendChild(nameLabel);
+      nameParagraph.appendChild(nameInput);
+      bookingForm.appendChild(nameParagraph);
+
+      let seqParagraph = document.createElement('p');
+      let seqLabel = document.createElement('label');
+      let seqInput = document.createElement('input');
+      seqLabel.for = 'booking sequence';
+      seqLabel.innerText = 'Booking Sequence: '
+      seqInput.type = 'text';
+      seqInput.name = 'booking_sequence';
+      seqInput.value = bookingSeq
+      seqParagraph.appendChild(seqLabel);
+      seqParagraph.appendChild(seqInput);
+      bookingForm.appendChild(seqParagraph);
+
+      let submitParagraph = document.createElement('p');
+      let submitInput = document.createElement('input');
+      submitInput.type = 'submit';
+      submitParagraph.appendChild(submitInput);
+      bookingForm.appendChild(submitParagraph);
+
+      newStudentSection.appendChild(bookingForm);
+
+      return newStudentSection
+    }
+
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const formData = new FormData(form);
+      const jsonData = multiPartToJSON(formData);
+      const jsonStrData = JSON.stringify(jsonData);
+      let newStudentSection;
+
+      const request = new XMLHttpRequest();
+      request.open('POST', 'http://localhost:3000/api/bookings');
+      request.setRequestHeader('Content-Type', 'application/json');
+
+      request.addEventListener('load', () => {
+        if (request.status === 204) {
+          alert('Booked.');
+        } else {
+          let bookingSequence = request.response.split(': ')[1]
+          let email = jsonData.student_email;
+          
+          newStudentSection = drawNewStudentForm(bookingSequence, email);
+          document.body.appendChild(newStudentSection);
+
+          let newStuForm = document.querySelector('#new_student_form');
+
+          newStuForm.addEventListener('submit', event => {
+            event.preventDefault();
+            const newStuData = new FormData(newStuForm);
+            const newStuJsonData = multiPartToJSON(newStuData);
+            const newStuJsonStrData = JSON.stringify(newStuJsonData);
+
+            const newStuRequest = new XMLHttpRequest();
+            newStuRequest.open('POST', 'http://localhost:3000/api/students');
+            newStuRequest.setRequestHeader('Content-Type', 'application/json');
+
+            newStuRequest.addEventListener('load', () => {
+              if (newStuRequest.status === 201) {
+                alert('Successfully added student to the database.');
+                form.dispatchEvent(new Event('submit', { cancelable: true }));
+              } else {
+                alert(newStuRequest.response);
+              }
+            });
+
+            newStuRequest.send(newStuJsonStrData);
+          });
+        }
+      });
+
+      request.send(jsonStrData);
+    });
+  </script>
+  </body>
+</html>
+
+<!-- // const secondBookingRequest = new XMLHttpRequest();
+// secondBookingRequest.open('POST', 'http://localhost:3000/api/bookings');
+// secondBookingRequest.setRequestHeader('Content-Type', 'application/json');
+
+// secondBookingRequest.addEventListener('load', () => {
+//   if (secondBookingRequest.status === 204) {
+//     alert('Booked.');
+//     newStudentSection.remove();
+//   } else {
+//     alert(secondBookingRequest.response);
+//   }
+// });
+
+// secondBookingRequest.send(jsonStrData); -->

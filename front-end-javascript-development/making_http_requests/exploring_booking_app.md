@@ -1,0 +1,16 @@
+- How many staff are there?
+  - Route: `/api/staff_members`
+  - Answer: 5
+- How many students are there?
+  - Route: `/api/students`
+  - Answer: 5
+- How many schedules exist?
+  - Route: `/api/schedules`
+  - Answer: 9
+- How many schedules have bookings?
+  - Route: `/api/schedules`
+  - Answer: 3
+- Do all staff have schedules?
+  - Route: None
+- Did all students book a schedule?
+  - Route: None

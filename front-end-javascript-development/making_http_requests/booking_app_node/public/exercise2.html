@@ -1,0 +1,48 @@
+<html>
+  <head></head>
+  <body></body>
+  <script>
+    function getAvailableSchedules() {
+      const request = new XMLHttpRequest();
+      request.open('GET', 'http://localhost:3000/api/schedules');
+      request.timeout = 5000;
+      request.responseType = 'json';
+  
+      request.addEventListener('load', event => {
+        let schedules = request.response;
+
+        if (schedules.length === 0) {
+          alert("There are no schedules available.");
+          return;
+        }
+
+        let staffIds = schedules.map(schedule => schedule.staff_id);
+        let uniqueStaffIds = [];
+
+        staffIds.forEach(staffId => {
+          if (!uniqueStaffIds.includes(staffId)) uniqueStaffIds.push(staffId);
+        })
+
+        uniqueStaffIds.forEach(staffId => {
+          let staffSchedules = schedules.filter(schedule => {
+            return schedule.staff_id === staffId;
+          });
+          
+          alert(`staff ${staffId}: ${staffSchedules.length}`);
+        });
+      });
+
+      request.addEventListener('timeout', () => {
+        alert('The request is taking longer than usual.')
+      });
+
+      request.addEventListener('loadend', ()) =>  {
+        alert('The request has completed.');
+      });
+  
+      request.send();
+    }
+
+    getAvailableSchedules();
+  </script>
+</html>

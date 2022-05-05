@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+  <head>
+    <link href="multiple_choice_quiz.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+  </head>
+  <body>
+    <form id="questionContainer">
+      <button type="submit">Submit</button>
+      <button type="reset">Clear All Answers</button>
+    </form>
+    <script id="quiz" type='text/x-handlebars'>
+      {{#each questions}}
+      {{> quizQuestion}}
+      {{/each}}
+    </script>
+    <script id="quizQuestion" type='text/x-handlebars'>
+      <fieldset class="question" id={{id}}>
+        <legend>{{description}}</legend>
+        {{#each options}}
+          <input type="radio" id="{{../id}}" name="{{../id}}">
+          <label for="{{../id}}">{{this}}</label>
+        {{/each}}
+      </fieldset>
+    </script>
+    <script id="correctAnswer" type="text/x-handlebars">
+      <p class="correct">Correct!</p>
+    </script>
+    <script id="incorrectAnswer" type="text/x-handlebars">
+      <p class="incorrect">The correct answer is {{answer}}</p>
+    </script>
+    <script id="unansweredAnswer" type="text/x-handlebars">
+      <p class="unanswered">The question was not answered.</p>
+    </script>
+    <script src="multiple_choice_quiz.js"></script>
+  </body>
+</html>

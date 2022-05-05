@@ -1,0 +1,3 @@
+// The first snippet is composed of one `div` node, which has one element child, `p`. Empty text nodes will precede and follow the `div` node. Whitespace text nodes will precede and follow `p`. The paragraph element has one child, an `em` element.  This section of the tree will be a child of a `body` element, which has a `head` sibling, both of which have an `html` parent. This totals to 11 nodes.
+
+// The second snippet, has 2 nodes less than the first snippet. Because there are no line breaks in the source html, the empty text nodes preceding and following the `div` node are absent.

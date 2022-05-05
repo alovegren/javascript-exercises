@@ -1,0 +1,1 @@
+// If the function is invoked and any of the arguments are `0`, the conditional that was intended to check whether the argument had a value of `undefined` will evaluate to `true`. So that variable will be reassigned to whatever the default value is. This would be of particular concern for `quantity`, `serviceCharge` and `tax` whose default values are not `0`.

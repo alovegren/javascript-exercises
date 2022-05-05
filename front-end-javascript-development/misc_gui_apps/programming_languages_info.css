@@ -1,0 +1,14 @@
+body {
+  background-color: rgb(184, 218, 92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+main {
+  background-color: white;
+  width: 50vw;
+  margin: 10px;
+  padding: 20px;
+  border-radius: 20px;
+}

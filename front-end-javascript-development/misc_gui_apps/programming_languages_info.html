@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <link href="programming_languages_info.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+  </head>
+  <body>
+    <main></main>
+    <script id="descriptions" type="text/x-handlebars">
+      {{#each languages}}
+      {{> shortDesc }}
+      {{/each}}
+    </script>
+    <script id="description" type="text/x-handlebars">
+      <article id={{id}}>
+        <h3>{{name}}</h3>
+        <p class="short-desc">{{shortDescription}}</p>
+        <button class="show-more" type="button">Show More</button>
+      </article>
+    </script>
+    <script src="programming_languages_info.js"></script>
+  </body>
+</html>

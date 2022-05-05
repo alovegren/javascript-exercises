@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="form_validation_1.css">
+  </head>
+  <body>
+    <form novalidate action="#" method="#">
+      <ul>
+        <li>
+          <label for="first_name">First Name</label>
+          <input type="text" id="first_name" name="first_name">
+          <p class="field-error inactive">
+            You must provide a first name.
+          </p>
+        </li>
+        <li>
+          <label for="last_name">Last Name</label>
+          <input type="text" id="last_name" name="last_name">
+          <p class="field-error inactive">
+            You must provide a last name.
+          </p>
+        </li>
+        <li>
+          <label for="password">Password</label>
+          <input type="text" id="password" name="password">
+          <p class="field-error inactive">
+            You must provide a password.
+          </p>
+        </li>
+        <li>
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email">
+          <p class="field-error inactive">
+            You must provide a valid email address.
+          </p>
+        </li>
+        <li>
+          <label for="phone">Phone Number</label>
+          <input type="text" id="phone" name="phone">
+          <p class="field-error inactive">
+            If provided, you must enter a valid US phone number.
+          </p>
+        </li>
+        <li id="credit_card_li">
+          <label for="credit_card">Credit Card</label>
+          <input type="text" id="cd1" maxlength="4" name="credit_card"> -
+          <input type="text" id="cd2" maxlength="4" name="credit_card"> -
+          <input type="text" id="cd3" maxlength="4" name="credit_card"> -
+          <input type="text" id="cd4" maxlength="4" name="credit_card">
+          <p class="field-error inactive">
+            You must enter a valid credit card number.
+          </p>
+        </li>
+        <li>
+          <button type="submit">Sign Up</button>
+        </li>
+      </ul>
+    </form>
+    <p class="form-error inactive">Check your fields.</p>
+    <section id="serialized-form"><h3>Serialized Form</h3></section>
+    <script src="form_validation_1.js"></script>
+  </body>
+</html>

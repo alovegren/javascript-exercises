@@ -1,0 +1,15 @@
+fieldset {
+  margin: 20px 5px;
+}
+
+.correct {
+  color: rgb(130, 177, 21);
+}
+
+.incorrect {
+  color: rgb(209, 2, 2);
+}
+
+.unanswered {
+  color: rgb(233, 202, 66);
+}

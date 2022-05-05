@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+  <head></head>
+  <body>
+      <form>
+        <button type-"button" id="add_schedule">Add more schedules</button>
+        <section class="schedule" id="1">
+          <h2>Schedule 1</h2>
+          <p>
+            <label for="staff_id">Staff Name: </label>
+            <select name="staff_id_1" class="staff_dropdown"></select>
+          </p>
+          <p><label for="date">Date: </label><input type="date" name="date_1"></p>
+          <p><label for="time">Time: </label><input type="time" name="time_1"></p>
+        </section>
+        <p><input type="submit"></p>
+      </form>
+    <script>
+      const QTY_INPUT_FIELDS = 3;
+
+      function createOption(staff) {
+        const option = document.createElement('option');
+        option.setAttribute('id', staff.id);
+        option.setAttribute('value', staff.id);
+        const displayText = document.createTextNode(staff.name);
+        option.appendChild(displayText);
+
+        return option;
+      }
+
+      function multiPartToJSON(formData) {
+        let schedules = {};
+
+        for (let entry of formData.entries()) {
+          schedules[entry[0]] = entry[1]
+        }
+
+        let scheduleQty = Object.keys(schedules).length / QTY_INPUT_FIELDS;
+        let json = [];
+
+        for (let idx = 1; idx <= scheduleQty; idx += 1) {
+          json.push({
+            "staff_id": schedules[`staff_id_${idx}`],
+            "date": schedules[`date_${idx}`],
+            "time": schedules[`time_${idx}`],
+          });
+        }
+
+        return { "schedules": json };
+      }
+
+      document.addEventListener('DOMContentLoaded', event => {
+        const staffNamesRequest = new XMLHttpRequest();
+        staffNamesRequest.open('GET', 'http://localhost:3000/api/staff_members');
+
+        staffNamesRequest.addEventListener('load', event => {
+          const staffs = JSON.parse(staffNamesRequest.response);
+
+          let staffSelect = document.querySelector('.staff_dropdown');
+
+          for (const staff of staffs) {
+            const staffOption = createOption(staff);
+            staffSelect.appendChild(staffOption);
+          }
+        });
+
+        staffNamesRequest.send();
+
+        let addScheduleButton = document.querySelector('button#add_schedule');
+
+        addScheduleButton.addEventListener('click', event => {
+          event.preventDefault();
+          let sections = document.querySelectorAll('section.schedule');
+          let lastCreatedSection = sections[sections.length - 1];
+          let lastSectionId = Number(lastCreatedSection.id);
+          let newSectionId = lastSectionId + 1;
+
+          let newSection = lastCreatedSection.cloneNode(true);
+          newSection.id  = newSectionId;
+          newSection.firstElementChild.textContent = `Schedule ${newSectionId}`
+          
+          let [selector, dateLabel, timeLabel] = [1, 2, 3].map(position => {
+            return newSection.children[position].lastElementChild;
+          });
+
+          selector.name  = `staff_id_${newSectionId}`;
+          dateLabel.name = `date_${newSectionId}`;
+          timeLabel.name = `time_${newSectionId}`;
+
+          lastCreatedSection.insertAdjacentElement('afterend', newSection);
+        });
+
+        let form = document.querySelector('form');
+
+        form.addEventListener('submit', event => {
+          event.preventDefault();
+
+          let formData = new FormData(form);
+          let jsonString = JSON.stringify(multiPartToJSON(formData));
+          
+          let request = new XMLHttpRequest();
+          request.open('POST', 'http://localhost:3000/api/schedules');
+          request.setRequestHeader('Content-Type', 'application/json');
+
+          request.addEventListener('load', event => {
+            if (request.response === 201) {
+              alert('Schedules added');
+            } else {
+              alert(request.response);
+            }
+          });
+
+          request.send(jsonString);
+        });
+      });
+    </script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+<!-- 2. add 'Add more schedules button'

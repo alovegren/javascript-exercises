@@ -1,0 +1,1 @@
+Should you add event listeners as the elements on the page that should listen appear? e.g. the 'Cancel' and 'Submit' buttons on the edit contact page-- bind those events upon initialization of the app or when they appear? Should you unbind them when the form is hidden? Seems like less work to just do it once? 

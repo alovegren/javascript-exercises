@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+  <head>
+    <h1>Bookings</h1>
+  </head>
+  <body>
+    <ul id="date_list"></ul>
+    <script>
+      let bookingsResult = new Promise((resolve, reject) => {
+        let bookingRequest = new XMLHttpRequest();
+        bookingRequest.open('GET', 'http://localhost:3000/api/bookings');
+
+        bookingRequest.onload = function() {
+          if (bookingRequest.status === 200) {
+            resolve(bookingRequest.response);
+          } else {
+            reject(bookingRequest.response);
+          }
+        }
+
+        bookingRequest.send();
+      });
+
+      function getSingleBooking(date) {
+        let bookingResult = new Promise((resolve, reject) => {
+          let bookingRequest = new XMLHttpRequest();
+          bookingRequest.open('GET', `http://localhost:3000/api/bookings/${date}`);
+
+          bookingRequest.onload = function() {
+            if (bookingRequest.status === 200) {
+              resolve(bookingRequest.response);
+            } else {
+              console.log('Something went wrong');
+              reject(bookingRequest.response);
+            }
+          }
+
+          bookingRequest.send();
+        });
+        
+        return bookingResult;
+      }
+
+      bookingsResult.then(response => {
+        let dates = JSON.parse(response);
+        let datePromises = [];
+        
+        for (let idx = 0; idx < dates.length; idx += 1) {
+          let date = dates[idx];
+          let list = document.getElementById('date_list');
+
+          let newItemLink = document.createElement('p');
+          let newItem = document.createElement('li');
+          newItem.textContent = date;
+          newItem.id = `booking_date_${idx + 1}`;
+          newItemLink.appendChild(newItem);
+
+          list.appendChild(newItemLink);
+          
+          datePromises.push(getSingleBooking(date));
+        }
+
+        return Promise.all(datePromises);
+      }).then(bookingsByDate => {
+        let bookingElements = [];
+
+        for (let dateI = 0; dateI < bookingsByDate.length; dateI += 1) {
+          let bookings = JSON.parse(bookingsByDate[dateI]);
+          let bookingList = document.createElement('ul');
+          bookingList.style.display = 'none';
+
+          for (let bookingI = 0; bookingI < bookings.length; bookingI += 1) {
+            let bookingItem = document.createElement('li');
+
+            let booking = bookings[bookingI];
+            bookingItem.innerText = booking.join(' | ');
+            bookingList.appendChild(bookingItem);
+          }
+
+          let dateItem = document.querySelector(`#booking_date_${dateI + 1}`);
+          bookingElements.push(bookingList);
+          dateItem.appendChild(bookingList);
+        }
+
+        bookingElements.forEach(bookingElem => {
+          bookingElem.parentElement.onclick = () => {
+            let currentDisplay = bookingElem.style.display;
+            if (currentDisplay === '') {
+              bookingElem.style.display = 'none';
+            } else {
+              bookingElem.style.display = '';
+            }
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
